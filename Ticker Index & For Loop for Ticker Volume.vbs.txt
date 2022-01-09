@@ -1,0 +1,57 @@
+Sub tickerIndex()
+
+Worksheets("tickerIndex").Activate
+yearValue = InputBox("What year would you like to run the analysis on?")
+Range("A3").Value = "Ticker"
+Range("B3").Value = "tickerVolumes"
+Range("C3").Value = "tickerStartingPrices"
+Range("D3").Value = "tickerEndingPrices"
+Range("E3").Value = "Return"
+Sheets(yearValue).Activate
+Dim tickers(12) As String
+    tickers(0) = "AY"
+    tickers(1) = "CSIQ"
+    tickers(2) = "DQ"
+    tickers(3) = "ENPH"
+    tickers(4) = "FSLR"
+    tickers(5) = "HASI"
+    tickers(6) = "JKS"
+    tickers(7) = "RUN"
+    tickers(8) = "SEDG"
+    tickers(9) = "SPWR"
+    tickers(10) = "TERP"
+    tickers(11) = "VSLR"
+Sheets(yearValue).Activate
+RowCount = Cells(Rows.Count, "A").End(xlUp).Row
+Dim startingPrice As Single
+Dim endingPrice As Single
+Dim TotalVolume As Long
+For i = 0 To 11
+ticker = tickers(i)
+TotalVolume = 0
+Sheets(yearValue).Activate
+For J = 2 To RowCount
+If Cells(J, 1).Value = ticker Then
+TotalVolume = TotalVolume + Cells(J, 8).Value
+End If
+If Cells(J - 1, 1).Value <> ticker And Cells(J, 1).Value = ticker Then
+startingPrice = Cells(J, 6).Value
+End If
+If Cells(J + 1, 1).Value <> ticker And Cells(J, 1).Value = ticker Then
+endingPrice = Cells(J, 6).Value
+End If
+Next J
+    Worksheets("tickerIndex").Activate
+    Cells(4 + i, 1).Value = ticker
+    Cells(4 + i, 2).Value = TotalVolume
+    Cells(4 + i, 3).Value = startingPrice
+    Cells(4 + i, 4).Value = endingPrice
+    Cells(4 + i, 5).Value = (endingPrice / startingPrice) - 1
+    Range("B4:B15").NumberFormat = "#,##0"
+    Cells(4 + i, 5).NumberFormat = "0.0%"
+    Columns("C:D").Select
+    Application.CutCopyMode = False
+    Selection.NumberFormat = "_($* #,##0.00_);_($* (#,##0.00);_($* ""-""??_);_(@_)"
+Next i
+
+End Sub
